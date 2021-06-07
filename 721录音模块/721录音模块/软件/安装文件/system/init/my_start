@@ -1,0 +1,19 @@
+# 加载开发板需要的内核驱动模块
+insmod sbc2440_my_gpio.ko
+insmod s3c_wdt.ko
+insmod sp706_wdt.ko
+
+# if compile sdchi into kernel, need not insmod this module
+# insmod sdhci-s3c.ko
+# 激活系统看门狗功能
+EmbedSky_wdg &
+# 下面添加自己需要运行的应用程序
+
+insmod /root/modules/gpio-pcf857x.ko
+
+
+/sddisk/system/app/recorder &
+
+/sddisk/system/guarder/guarder &
+
+

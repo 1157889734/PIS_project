@@ -1,0 +1,8 @@
+#Recorder Configuration
+
+localip: 192.168.101.11  
+
+devid: 		2
+line: 		1
+station: 	1
+area:		3

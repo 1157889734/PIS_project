@@ -1,0 +1,454 @@
+/**
+  ******************************************************************************
+  * 
+  *
+  ******************************************************************************
+  */ 
+
+/* Includes ------------------------------------------------------------------*/
+  
+
+#include "MyAll.h"
+
+static u16 RandCourt = 0;
+
+ 
+u32 Debuger;
+u8 data;
+uint32 *timer ;
+//extern u8 StorageInfoSaveFlag;
+uint8 change_flag=0;
+//u8 work_mode=4;	
+volatile uint8 timer_flag = 0, refresh_flag = 1, timer2_flag = 0, timer3_flag;
+
+//uint16 NetDispLen_1;
+/*--  宋体12;  此字体下对应的点阵为：宽x高=8x16   --*/
+/*
+	uint8 V[]={0xEF,0xE1,0xEE,0xFF,0xFF,0xEC,0xE3,0xEF,0xFF,0xFF,0x1F,0xE3,0x8F,0x7F,0xFF,0xFF};
+	uint8 e[]={0xFF,0xFF,0xFE,0xFE,0xFE,0xFE,0xFF,0xFF,0xFF,0x07,0xBB,0xBB,0xBB,0xBB,0x37,0xFF};
+	uint8 r[]={0xFE,0xFE,0xFE,0xFF,0xFE,0xFE,0xFE,0xFF,0xFB,0xFB,0x03,0x7B,0xFB,0xFF,0x7F,0xFF};
+	uint8 s[]={0xFF,0xFF,0xFE,0xFE,0xFE,0xFE,0xFE,0xFF,0xFF,0x33,0xDB,0xDB,0xDB,0xDB,0x67,0xFF};
+	uint8 I[]={0xFF,0xFE,0xE6,0xE6,0xFF,0xFF,0xFF,0xFF,0xFF,0xFB,0xFB,0x03,0xFB,0xFB,0xFF,0xFF};
+	uint8 o[]={0xFF,0xFF,0xFE,0xFE,0xFE,0xFE,0xFF,0xFF,0xFF,0x07,0xFB,0xFB,0xFB,0xFB,0x07,0xFF};
+	uint8 n[]={0xFE,0xFE,0xFF,0xFE,0xFE,0xFE,0xFF,0xFF,0xFB,0x03,0x7B,0xFF,0xFF,0xFB,0x03,0xFB};
+	uint8 ling[]={0xFF,0xF7,0xF7,0xE0,0xFF,0xFF,0xFF,0xFF,0xFF,0xFB,0xFB,0x03,0xFB,0xFB,0xFF,0xFF};    //"0"
+	uint8 dian[]={0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xF3,0xF3,0xFF,0xFF,0xFF,0xFF,0xFF};  //"."
+	uint8 yi[]={0xFF,0xF8,0xF7,0xEF,0xEF,0xF7,0xF8,0xFF,0xFF,0x0F,0xF7,0xFB,0xFB,0xF7,0x0F,0xFF};      //"1"
+	uint8 xie[]={0xFF,0xFF,0xFF,0xFF,0xFE,0xF9,0xE7,0xDF,0xFF,0xF9,0xE7,0x9F,0x7F,0xFF,0xFF,0xFF,};   //" /"
+ */
+
+
+
+void Check_mode()
+{
+	uint8 i;
+	NetDispLen=16;
+	for(i=0;i<NetDispLen/2;i++)
+	{
+		ledbuf_tmp1[i][1] = 0x00;	
+		ledbuf_tmp1[i][0] = 0x00;
+	}
+}
+
+
+#if 1
+void  Version_mode()
+{
+	
+	uint8 i;
+	
+	uint8 V[]={0xEF,0xE1,0xEE,0xFF,0xFF,0xEC,0xE3,0xEF,0xFF,0xFF,0x1F,0xE3,0x8F,0x7F,0xFF,0xFF};
+	uint8 e[]={0xFF,0xFF,0xFE,0xFE,0xFE,0xFE,0xFF,0xFF,0xFF,0x07,0xBB,0xBB,0xBB,0xBB,0x37,0xFF};
+	uint8 r[]={0xFE,0xFE,0xFE,0xFF,0xFE,0xFE,0xFE,0xFF,0xFB,0xFB,0x03,0x7B,0xFB,0xFF,0x7F,0xFF};
+	uint8 s[]={0xFF,0xFF,0xFE,0xFE,0xFE,0xFE,0xFE,0xFF,0xFF,0x33,0xDB,0xDB,0xDB,0xDB,0x67,0xFF};
+	uint8 I[]={0xFF,0xFE,0xE6,0xE6,0xFF,0xFF,0xFF,0xFF,0xFF,0xFB,0xFB,0x03,0xFB,0xFB,0xFF,0xFF};
+	uint8 o[]={0xFF,0xFF,0xFE,0xFE,0xFE,0xFE,0xFF,0xFF,0xFF,0x07,0xFB,0xFB,0xFB,0xFB,0x07,0xFF};
+	uint8 n[]={0xFE,0xFE,0xFF,0xFE,0xFE,0xFE,0xFF,0xFF,0xFB,0x03,0x7B,0xFF,0xFF,0xFB,0x03,0xFB};
+	uint8 yi[]={0xFF,0xF7,0xF7,0xE0,0xFF,0xFF,0xFF,0xFF,0xFF,0xFB,0xFB,0x03,0xFB,0xFB,0xFF,0xFF};    //"0"
+	uint8 dian[]={0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xF3,0xF3,0xFF,0xFF,0xFF,0xFF,0xFF};  //"."
+//	uint8 ling[]={0xFF,0xF8,0xF7,0xEF,0xEF,0xF7,0xF8,0xFF,0xFF,0x0F,0xF7,0xFB,0xFB,0xF7,0x0F,0xFF};      //"1"
+	uint8 shu[]={0xff,0xff,0xff,0xff,0xff,0x00,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x00,0xff,0xff};
+	uint8 er[]={0xFF,0xF1,0xEF,0xEF,0xEF,0xEE,0xF1,0xFF,0xFF,0xF3,0xEB,0xDB,0xBB,0x7B,0xF3,0xFF};
+//	uint8 ba[]={0xFF,0xF1,0xEE,0xEF,0xEF,0xEE,0xF1,0xFF,0xFF,0xC7,0xBB,0x7B,0x7B,0xBB,0xC7,0xFF};
+	uint8 jiu[]={0xFF,0xF8,0xF7,0xEF,0xEF,0xF7,0xF8,0xFF,0xFF,0xFF,0x73,0xBB,0xBB,0x77,0x0F,0xFF};
+//	uint8 qi[]={0xFF,0xE3,0xEF,0xEF,0xEC,0xE3,0xEF,0xFF,0xFF,0xFF,0xFF,0x03,0xFF,0xFF,0xFF,0xFF};
+//	uint8 si[]={0xFF,0xFF,0xFC,0xFB,0xF7,0xE0,0xFF,0xFF,0xFF,0x1F,0xDF,0xDB,0xDB,0x03,0xDB,0xFF};
+	uint8 ba[]={0xFF,0xF1,0xEE,0xEF,0xEF,0xEE,0xF1,0xFF,0xFF,0xC7,0xBB,0x7B,0x7B,0xBB,0xC7,0xFF};
+	uint8 liu[]={0xFF,0xF8,0xF7,0xEE,0xEE,0xE7,0xFF,0xFF,0xFF,0x0F,0x77,0xFB,0xFB,0x77,0x8F,0xFF};
+	uint8 wu[]={0xFF,0xE0,0xEF,0xEE,0xEE,0xEF,0xEF,0xFF,0xFF,0x67,0x7B,0xFB,0xFB,0x77,0x8F,0xFF};
+	uint8 san[]={0xFF,0xF3,0xEF,0xEE,0xEE,0xED,0xF3,0xFF,0xFF,0xE7,0xFB,0xFB,0xFB,0x77,0x8F,0xFF};
+	
+
+	NetDispLen=272;
+	//NetDispLen=240;
+
+	for(i = 0; i<sizeof(shu); i++)
+	{
+		ledbuf_tmp1[i%8][(i/8)%2] = shu[i];
+	}
+	
+	 for(i = 0; i<sizeof(V); i++) {
+		ledbuf_tmp1[8+i%8][(i/8)%2] = V[i];
+	}
+
+	for(i = 0; i<sizeof(e); i++) {
+		ledbuf_tmp1[16+i%8][(i/8)%2] = e[i];
+	}
+
+	for(i = 0; i<sizeof(r); i++) {
+		ledbuf_tmp1[24+i%8][(i/8)%2] = r[i];
+	}
+	for(i = 0; i<sizeof(s); i++) {
+		ledbuf_tmp1[32+i%8][(i/8)%2] = s[i];
+	}
+	for(i = 0; i<sizeof(I); i++) {
+		ledbuf_tmp1[40+i%8][(i/8)%2] = I[i];
+	}
+	for(i = 0; i<sizeof(o); i++) {
+		ledbuf_tmp1[48+i%8][(i/8)%2] = o[i];
+	}
+	
+	for(i = 0; i<sizeof(n); i++) {
+		ledbuf_tmp1[56+i%8][(i/8)%2] = n[i];
+	}
+	for(i = 0; i<sizeof(yi); i++) {
+		ledbuf_tmp1[64+i%8][(i/8)%2] = yi[i];
+	}
+	for(i = 0; i<sizeof(dian); i++) {
+		ledbuf_tmp1[72+i%8][(i/8)%2]= dian[i];
+	}
+	for(i = 0; i<sizeof(yi); i++) {
+		ledbuf_tmp1[80+i%8][(i/8)%2] = yi[i];
+	}
+	for(i = 0; i<sizeof(dian); i++) {
+		ledbuf_tmp1[88+i%8][(i/8)%2]= dian[i];
+	}
+	for(i = 0; i<sizeof(yi); i++) {
+		ledbuf_tmp1[96+i%8][(i/8)%2] = yi[i];
+	}
+	for(i = 0; i<sizeof(dian); i++) {
+		ledbuf_tmp1[104+i%8][(i/8)%2]= liu[i];
+	}
+	for(i = 0; i<sizeof(yi); i++) {
+		ledbuf_tmp1[112+i%8][(i/8)%2] = dian[i];
+	}
+
+	for(i = 0; i<sizeof(yi); i++) {
+		ledbuf_tmp1[120+i%8][(i/8)%2] = wu[i];
+	}
+	for(i = 0; i<sizeof(dian); i++) {
+		ledbuf_tmp1[128+i%8][(i/8)%2]= san[i];
+	}
+
+}
+
+#endif
+
+
+void Test_mode()
+{
+	uint8 i;
+	NetDispLen=16;
+
+	for(i=0;i<NetDispLen/2;i++)
+	{
+		ledbuf_tmp1[i][1] = 0x00;	
+		ledbuf_tmp1[i][0] = 0x00;
+	}
+
+}
+
+/**
+  * @brief  Main program
+  * @param  None
+  * @retval None
+  */
+
+int main(void)
+{
+//	uint16 i;
+  /*!< At this stage the microcontroller clock setting is already configured, 
+       this is done through SystemInit() function which is called from startup
+       file (startup_stm32f2xx.s) before to branch to application main.
+       To reconfigure the default setting of SystemInit() function, refer to
+        system_stm32f2xx.c file
+     */
+	static uint32 timer_1,timer_2,timer_3,timer_4,timer_7,timer_8;
+	u8 reset=0;
+	
+	timer_1 = timer_2 = timer_3 = timer_4 = 0;
+	timer_7 = timer_8 = 0;
+	
+	Delay(1000);
+
+	#ifdef IAP_PROG
+	Check_And_RunAPP();
+	#else
+	App_SetVectorTable();
+	#endif
+
+	RCC_Configuration();
+
+	Delay(1000);
+	
+	GPIO_Configuration();
+	SysTick_Init();
+	feed_dog();
+	feed_dog();
+
+	
+	LED1Off();
+	LED2Off();
+
+	AppInit();
+
+	StorageInit();
+	NetInit();
+
+	Delay(1000);
+
+	//AudioInit();
+
+	Delay(10000);
+	Delay(10000);
+	Delay(10000);
+
+	StorageInfoRead();
+	feed_dog();
+	feed_dog();
+
+	Delay(1000);
+
+	
+	feed_dog();
+	feed_dog();
+	
+
+	roll_speed=12;
+	Color=1;
+
+	Version_mode();
+
+/*--  文字:  1  --*/
+/*--  楷体_GB231212;  此字体下对应的点阵为：宽x高=8x16   --*/
+	while(1)
+	{
+
+			
+		//NetInit();
+
+		AppProcess();
+
+		LwipProcess();
+
+
+#ifdef IAP_PROG
+		if (timer0_check_timer(&timer_7, TIMING_100ms)) {
+			feed_dog();
+			LED1Flash();
+		}
+		turn_off_screen_clrbuf();
+		if (timer0_check_timer(&timer_8, TIMING_5sec)) {
+			send_downloadReq();
+		}
+
+		tftp_cli_timeout_process();
+		
+#else																	   	
+	if (timer0_check_timer(&timer_7, TIMING_100ms)) {
+			if(!reset)
+			{
+				feed_dog();
+			}
+			
+		}
+
+		if (timer0_check_timer(&timer_8, TIMING_5sec)) {
+			send_AppInfo();
+		}
+		
+		check_iap_req_process();
+
+#endif
+	
+			
+	    /* 5s收不到数据就清屏*/
+		#if 1
+		//if(content_flag)
+		{
+			if (timer0_check_timer(&timer_3, 10000)) 
+			{	
+				cnt++;
+				if(cnt>15)
+					cnt=16;
+				if(cnt==16)
+				{
+					//清屏  
+					//Version_mode();
+					reset=1;
+					//memset(ledbuf_tmp1,0xff,sizeof(ledbuf_tmp1));
+				}
+
+			}	
+		}
+		#endif
+
+		
+		if (timer0_check_timer(&timer_2, 100)) 
+		{
+			if(!reset)
+			{
+				feed_dog();
+			}
+		}
+		
+		
+		
+		if (timer0_check_timer(&timer_1, 5000)) 
+		{
+			LED1Flash();
+		}
+
+		
+		if(work_mode==4)									//开机模式
+		{
+		
+			if(refresh_flag)
+			{
+				refresh_flag = 0;
+				screen_roll(NetDispLen/2, Color);
+			}
+		}
+		else
+		{
+			if(work_mode==0x00)						// 工作模式0  该模式下显示中央控制器发来的控制信息
+			{
+				if(refresh_flag)
+				{ 
+					refresh_flag = 0;
+					screen_roll(NetDispLen/2, Color);
+				}
+			}
+		
+			if(work_mode==0x01)						//工作模式1   坏点检测模式滚动显示/
+			{
+
+				Check_mode();
+
+				if(refresh_flag)	
+				{
+					refresh_flag = 0;
+					screen_roll(NetDispLen/2, 1); 
+					//绿色
+				}
+
+			}
+		
+			if(work_mode==0x02)					//工作模式2   显示版本信息
+			{
+				//Version_mode();
+				if(refresh_flag)
+				{
+					refresh_flag = 0;
+					screen_roll(NetDispLen/2, Color);
+				}
+			}
+			
+			if(work_mode==0x03)					//工作模式3   显示"测试中"
+			{
+				Test_mode();
+				
+				if(refresh_flag)
+				{
+					refresh_flag = 0;
+					screen_roll(NetDispLen/2, Color);
+				}
+			}
+		}
+		 
+		if(timer2_flag)
+		{
+			timer2_flag = 0;
+			Refresh_74HC595_status();
+		}
+
+		if (timer0_check_timer(&timer_4, 5000)) 
+		{
+			//NetControlSendInspection();
+			RandCourt = rand() % (5000- 1) + 1;
+			LED2Flash();
+		}
+		else if((get_timer0_clock() - timer_4) == RandCourt || (get_timer0_clock() + (0xFFFFFFFF - timer_4)) == RandCourt)
+		{
+			RandCourt = 0xffff;
+			NetControlSendInspection();
+		}
+
+		if(MyTmCnt20 >= 2)
+		{
+			MyTmCnt20 = 2;
+			MyTimer20();
+		}
+		
+		if(MyTmCnt50 >= 5)
+		{
+			MyTmCnt50 = 0;
+			MyTimer50();
+		}
+
+		if(MyTmCnt100 >= 10)					   
+		{
+			MyTmCnt100 = 0;
+			MyTimer100();
+		}
+
+		if(MyTmCnt500 >= 50)
+		{
+			MyTmCnt500 = 0;
+			MyTimer500();
+		}
+
+		if(MyTmCnt1000 >= 100)
+		{
+			MyTmCnt1000 = 0;
+			MyTimer1000();
+		}
+
+		if(MyTmCnt2000 >= 200)
+		{
+			MyTmCnt2000 = 0;
+			MyTimer2000();
+		}
+		                                     
+	}
+
+}
+
+#ifdef  USE_FULL_ASSERT
+
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t* file, uint32_t line)
+{ 
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+
+  /* Infinite loop */
+  while (1)
+  {
+
+  
+  }
+  
+}
+ 
+#endif
+
+
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

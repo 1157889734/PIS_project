@@ -1,0 +1,42 @@
+#!/bin/sh
+
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+runlevel=S
+prevlevel=N
+umask 022
+export PATH runlevel prevlevel
+
+#
+#	Trap CTRL-C &c only in this shell so we can interrupt subprocesses.
+#
+
+mount -a
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+#mount -n -t usbfs none /proc/bus/usb
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+mkdir -p /var/lock
+
+hwclock -s
+
+
+#pda &
+
+#modprobe zd1211rw
+#modprobe rt73usb
+#modprobe g_mass_storage
+#modprobe libertas_sdio helper_name=/lib/firmware/sd8686_helper.bin fw_name=/lib/firmware/sd8686.bin
+#modprobe rt5370sta
+
+ifconfig lo 127.0.0.1
+net_set &
+
+/etc/rc.d/init.d/leds start
+/etc/rc.d/init.d/netd start
+# boa service
+# /etc/rc.d/init.d/httpd start
+
+/bin/hostname -F /etc/sysconfig/HOSTNAME
+cd /root/modules && . my_start
